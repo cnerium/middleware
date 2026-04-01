@@ -11,8 +11,8 @@ include(GNUInstallDirs)
 # ========================
 # Options
 # ========================
-option(CNERIUM_MIDDLEWARE_BUILD_TESTS "Build middleware tests" ON)
-option(CNERIUM_MIDDLEWARE_BUILD_EXAMPLES "Build middleware examples" ON)
+option(CNERIUM_MIDDLEWARE_BUILD_TESTS "Build middleware tests" OFF)
+option(CNERIUM_MIDDLEWARE_BUILD_EXAMPLES "Build middleware examples" OFF)
 
 # ========================
 # Global settings
@@ -28,12 +28,18 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.vix/vix_deps.cmake")
     include("${CMAKE_CURRENT_SOURCE_DIR}/.vix/vix_deps.cmake")
 endif()
 
-if(NOT TARGET cnerium::http AND NOT TARGET cnerium_http)
+if(NOT TARGET cnerium::http
+   AND NOT TARGET cnerium_http
+   AND NOT TARGET http::http
+   AND NOT TARGET http)
     find_package(cnerium_http CONFIG QUIET)
     find_package(http CONFIG QUIET)
 endif()
 
-if(NOT TARGET cnerium::json AND NOT TARGET cnerium_json)
+if(NOT TARGET cnerium::json
+   AND NOT TARGET cnerium_json
+   AND NOT TARGET json::json
+   AND NOT TARGET json)
     find_package(cnerium_json CONFIG QUIET)
     find_package(json CONFIG QUIET)
 endif()
@@ -45,12 +51,20 @@ if(TARGET cnerium::http)
     set(CNERIUM_MIDDLEWARE_HTTP_TARGET cnerium::http)
 elseif(TARGET cnerium_http)
     set(CNERIUM_MIDDLEWARE_HTTP_TARGET cnerium_http)
+elseif(TARGET http::http)
+    set(CNERIUM_MIDDLEWARE_HTTP_TARGET http::http)
+elseif(TARGET http)
+    set(CNERIUM_MIDDLEWARE_HTTP_TARGET http)
 endif()
 
 if(TARGET cnerium::json)
     set(CNERIUM_MIDDLEWARE_JSON_TARGET cnerium::json)
 elseif(TARGET cnerium_json)
     set(CNERIUM_MIDDLEWARE_JSON_TARGET cnerium_json)
+elseif(TARGET json::json)
+    set(CNERIUM_MIDDLEWARE_JSON_TARGET json::json)
+elseif(TARGET json)
+    set(CNERIUM_MIDDLEWARE_JSON_TARGET json)
 endif()
 
 if(CNERIUM_MIDDLEWARE_HTTP_TARGET STREQUAL "")

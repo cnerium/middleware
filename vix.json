@@ -1,7 +1,7 @@
 {
   "name": "middleware",
   "namespace": "cnerium",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "header-only",
   "include": "include",
   "license": "MIT",
@@ -24,11 +24,11 @@
   "deps": [
     {
       "id": "cnerium/http",
-      "version": "0.6.0"
+      "version": "0.7.0"
     },
     {
       "id": "cnerium/json",
-      "version": "0.3.0"
+      "version": "0.4.0"
     }
   ]
 }

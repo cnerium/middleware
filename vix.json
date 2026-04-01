@@ -1,0 +1,24 @@
+{
+  "name": "middleware",
+  "namespace": "cnerium",
+  "version": "0.1.0",
+  "type": "header-only",
+  "include": "include",
+  "license": "MIT",
+  "description": "Composable middleware system for the Cnerium web framework.",
+  "keywords": [
+    "cpp",
+    "middleware",
+    "http",
+    "framework",
+    "cnerium",
+    "vix"
+  ],
+  "repository": "https://github.com/cnerium/middleware",
+  "authors": [
+    {
+      "name": "Gaspard Kirira",
+      "github": "Gaspardkirira"
+    }
+  ]
+}

@@ -1,2 +1,7 @@
 # middleware
-Composable middleware system for extending Cnerium applications.
+
+Header-only C++ library scaffold.
+
+```bash
+vix tests
+```

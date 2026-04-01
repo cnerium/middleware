@@ -20,5 +20,15 @@
       "name": "Gaspard Kirira",
       "github": "Gaspardkirira"
     }
+  ],
+  "deps": [
+    {
+      "id": "cnerium/http",
+      "version": "0.2.0"
+    },
+    {
+      "id": "cnerium/json",
+      "version": "0.2.0"
+    }
   ]
 }

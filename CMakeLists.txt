@@ -1,37 +1,31 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(cnerium_middleware
-    VERSION 0.1.0
+    VERSION 0.2.0
     DESCRIPTION "Cnerium Middleware - Composable middleware system for the Cnerium web framework"
     LANGUAGES CXX
 )
 
 include(GNUInstallDirs)
 
-# ========================
-# Options
-# ========================
 option(CNERIUM_MIDDLEWARE_BUILD_TESTS "Build middleware tests" ON)
 option(CNERIUM_MIDDLEWARE_BUILD_EXAMPLES "Build middleware examples" ON)
 
-# ========================
-# Global settings
-# ========================
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# ========================
-# Dependencies
-# ========================
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.vix/vix_deps.cmake")
     include("${CMAKE_CURRENT_SOURCE_DIR}/.vix/vix_deps.cmake")
 endif()
 
 find_package(cnerium_http CONFIG QUIET)
 find_package(http CONFIG QUIET)
+find_package(cnerium_json CONFIG QUIET)
+find_package(json CONFIG QUIET)
 
 set(CNERIUM_MIDDLEWARE_HTTP_TARGET "")
+set(CNERIUM_MIDDLEWARE_JSON_TARGET "")
 
 if(TARGET http::http)
     set(CNERIUM_MIDDLEWARE_HTTP_TARGET http::http)
@@ -41,6 +35,16 @@ elseif(TARGET cnerium::http)
     set(CNERIUM_MIDDLEWARE_HTTP_TARGET cnerium::http)
 elseif(TARGET cnerium_http)
     set(CNERIUM_MIDDLEWARE_HTTP_TARGET cnerium_http)
+endif()
+
+if(TARGET json::json)
+    set(CNERIUM_MIDDLEWARE_JSON_TARGET json::json)
+elseif(TARGET json)
+    set(CNERIUM_MIDDLEWARE_JSON_TARGET json)
+elseif(TARGET cnerium::json)
+    set(CNERIUM_MIDDLEWARE_JSON_TARGET cnerium::json)
+elseif(TARGET cnerium_json)
+    set(CNERIUM_MIDDLEWARE_JSON_TARGET cnerium_json)
 endif()
 
 if(CNERIUM_MIDDLEWARE_HTTP_TARGET STREQUAL "")
@@ -53,9 +57,16 @@ if(CNERIUM_MIDDLEWARE_HTTP_TARGET STREQUAL "")
     )
 endif()
 
-# ========================
-# Library (header-only)
-# ========================
+if(CNERIUM_MIDDLEWARE_JSON_TARGET STREQUAL "")
+    message(FATAL_ERROR
+        "cnerium json target not found.\n"
+        "Tried: json::json, json, cnerium::json, cnerium_json\n"
+        "Install dependencies with Vix:\n"
+        "  vix add @cnerium/json\n"
+        "  vix install"
+    )
+endif()
+
 add_library(middleware INTERFACE)
 add_library(middleware::middleware ALIAS middleware)
 
@@ -64,6 +75,7 @@ target_compile_features(middleware INTERFACE cxx_std_20)
 target_link_libraries(middleware
     INTERFACE
         ${CNERIUM_MIDDLEWARE_HTTP_TARGET}
+        ${CNERIUM_MIDDLEWARE_JSON_TARGET}
 )
 
 target_include_directories(middleware INTERFACE
@@ -71,32 +83,20 @@ target_include_directories(middleware INTERFACE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-# ========================
-# Compiler options
-# ========================
 if(MSVC)
     target_compile_options(middleware INTERFACE /W4 /permissive-)
 else()
     target_compile_options(middleware INTERFACE -Wall -Wextra -Wpedantic)
 endif()
 
-# ========================
-# Target properties
-# ========================
 set_target_properties(middleware PROPERTIES
     EXPORT_NAME middleware
 )
 
-# ========================
-# Examples
-# ========================
 if(CNERIUM_MIDDLEWARE_BUILD_EXAMPLES AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/examples/CMakeLists.txt")
     add_subdirectory(examples)
 endif()
 
-# ========================
-# Tests
-# ========================
 if(CNERIUM_MIDDLEWARE_BUILD_TESTS)
     include(CTest)
     enable_testing()
@@ -108,12 +108,10 @@ if(CNERIUM_MIDDLEWARE_BUILD_TESTS)
     endif()
 endif()
 
-# ========================
-# Summary
-# ========================
 message(STATUS "------------------------------------------------------")
 message(STATUS "cnerium middleware configured (${PROJECT_VERSION})")
 message(STATUS "HTTP target:     ${CNERIUM_MIDDLEWARE_HTTP_TARGET}")
+message(STATUS "JSON target:     ${CNERIUM_MIDDLEWARE_JSON_TARGET}")
 message(STATUS "Include dir:     ${CMAKE_CURRENT_SOURCE_DIR}/include")
 message(STATUS "Build tests:     ${CNERIUM_MIDDLEWARE_BUILD_TESTS}")
 message(STATUS "Build examples:  ${CNERIUM_MIDDLEWARE_BUILD_EXAMPLES}")
